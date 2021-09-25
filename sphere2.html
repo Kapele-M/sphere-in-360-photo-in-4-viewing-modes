@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=UTF-8 />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+	
+
+  </head>
+  <body>
+
+           
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+ 
+   <script>
+      
+      let scene, camera, renderer;
+      function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(70,window.innerWidth/window.innerHeight,1,5000);
+        camera.position.set(0,400,1000);
+
+        renderer = new THREE.WebGLRenderer({antialias:true});
+        renderer.setSize(window.innerWidth,window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+         controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = true;
+
+let urls = [     'black.jpg' ];
+
+
+   
+
+    
+
+	  let loader = new THREE.CubeTextureLoader(); 
+        scene.background = loader.load(urls);
+       
+        sphereCamera = new THREE.CubeCamera(1, 1000, 500);
+        sphereCamera.position.set(0, 100, 0);
+        scene.add(sphereCamera);
+    
+
+	
+		
+// Earth params
+	var radius   =300,
+		segments = 52,
+		rotation = 20;  
+/////////////////////////////////////
+var sphere1 =  sphereMaterial(radius, segments);
+var sphere2 =  sphereMaterial2(radius, segments);
+
+	
+function sphereMaterial(radius, segments) {
+		return new THREE.Mesh(
+			new THREE.SphereGeometry(radius, segments, segments),
+			new THREE.MeshBasicMaterial({
+				map:         THREE.ImageUtils.loadTexture('1.jpg'),
+	
+			side: THREE.BackSide,
+			      opacity:1, //change opacity for making ball transparent
+
+				   transparent: true,
+				   depthTest : true,
+				  //  flatShading: true
+			})
+		);
+	}
+
+        scene.add(sphere1);
+//////////////------------------------------------------------------------------------
+function sphereMaterial2(radius, segments) {
+		return new THREE.Mesh(
+			new THREE.SphereGeometry(radius, segments, segments),
+			new THREE.MeshBasicMaterial({
+				map:         THREE.ImageUtils.loadTexture('1.jpg'),
+			
+			side: THREE.FrontSide,
+			
+			      opacity:0.5, //change opacity for making ball transparent
+	
+				   transparent: true,
+				   depthTest : true,
+				
+			})
+		);
+	}
+ scene.add(sphere2);
+///////////------------------------------------------------------------------
+
+
+        render();
+      }
+      function render() {
+	
+        renderer.render(scene, camera);
+        sphereCamera.updateCubeMap( renderer, scene );
+        requestAnimationFrame(render);
+//////////////////////////
+	 controls.update(); 
+////////////////// 
+ 
+     }
+
+      init();
+    </script>
+  </body>
+</html>

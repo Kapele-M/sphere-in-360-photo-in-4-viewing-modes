@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=UTF-8 />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+	
+
+  </head>
+  <body>
+
+           
+    <script src="three.min.js"></script>
+    <script src="OrbitControls2.js"></script>
+ 
+   <script>
+      
+      let scene, camera, renderer;
+      function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(70,window.innerWidth/window.innerHeight,1,5000);
+        camera.position.set(0,400,1000);
+
+        renderer = new THREE.WebGLRenderer({antialias:true});
+        renderer.setSize(window.innerWidth,window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+         controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = true;
+
+//let urls = [        'black.jpg', ];
+
+
+   
+
+      let urls = [
+          'px.jpg', 'nx.jpg',
+          'py.jpg', 'ny.jpg',
+          'pz.jpg', 'nz.jpg',
+        ];
+
+	  let loader = new THREE.CubeTextureLoader(); 
+        scene.background = loader.load(urls);
+       
+        sphereCamera = new THREE.CubeCamera(1, 1000, 500);
+        sphereCamera.position.set(0, 100, 0);
+        scene.add(sphereCamera);
+    
+
+
+		
+// Earth params
+	var radius   =300,
+	    radius2  = 300, //reflection sphere radius
+		segments = 52,
+		rotation = 20;  
+/////////////////////////////////////
+var sphere1 =  sphereMaterial(radius, segments);
+var sphere2 =  sphereMaterial2(radius, segments);
+var sphere3 =  sphereMaterial3(radius2, segments); //mirror sphere
+
+	
+	//---------------------------------------------------------------------------- mirror sphere
+function sphereMaterial3(radius2, segments) {
+		return new THREE.Mesh(
+			new THREE.SphereGeometry(radius2, segments, segments),
+			new THREE.MeshBasicMaterial({	envMap: sphereCamera.renderTarget		})
+		);
+	}
+   
+           sphere3.position.set(0,0, 0); 
+	  scene.add(sphere3);
+
+///-------------------------------------
+  
+function sphereMaterial(radius, segments) {
+		return new THREE.Mesh(
+			new THREE.SphereGeometry(radius, segments, segments),
+			new THREE.MeshBasicMaterial({
+				map:         THREE.ImageUtils.loadTexture('1.jpg'),
+	
+			side: THREE.BackSide,
+			      opacity:1, //change opacity for making ball transparent
+	//	refractionRatio:0.5,
+				   transparent: true,
+				   depthTest : true,
+				  //  flatShading: true
+			})
+		);
+	}
+  sphere1.position.set(0,650, 0);   //  sphere1.position.set(0,650, 0);   -- sphere above mirror sphere
+        scene.add(sphere1);
+//////////////------------------------------------------------------------------------
+function sphereMaterial2(radius, segments) {
+		return new THREE.Mesh(
+			new THREE.SphereGeometry(radius, segments, segments),
+			new THREE.MeshBasicMaterial({
+				map:         THREE.ImageUtils.loadTexture('1.jpg'),
+	
+			//blending: THREE.AdditiveBlending,
+			      opacity:0.5, //change opacity for making ball transparent
+	//	refractionRatio:0.5,
+				   transparent: true,
+				   depthTest : true,
+				  //  flatShading: true
+			})
+		);
+	}
+     //  let mirrorSphere = new THREE.Mesh(sphereGeo, sphereMaterial);
+      // mirrorSphere.position.set(0, 100, 0);
+	   sphere2.position.set(0,650, 0); 
+        scene.add(sphere2);
+
+		
+		render();
+      }
+      function render() {
+	
+        renderer.render(scene, camera);
+        sphereCamera.updateCubeMap( renderer, scene );
+        requestAnimationFrame(render);
+//////////////////////////
+	 controls.update(); 
+////////////////// 
+ 
+     }
+
+      init();
+    </script>
+  </body>
+</html>
